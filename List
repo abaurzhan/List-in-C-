@@ -1,0 +1,171 @@
+#include <iostream>
+#include <ctime>
+#include <list>
+using namespace std;
+
+template <typename T>
+class List
+{
+	struct Node
+	{
+		T data;
+		Node *next = nullptr;
+		Node *prev = nullptr;
+
+		Node(T data, Node* ptr)
+		{
+			this->data = data;
+			next = ptr;
+		}
+	};
+
+	Node *root = nullptr;
+	Node *tail = nullptr;
+	size_t size = 0;
+
+public:
+	void push_front(T data)
+	{
+		root = new Node(data, root);
+		++size;
+	}
+
+	void push_back(T data)
+	{
+		if(root==nullptr) root = new Node(data, nullptr);
+		else
+		{
+			Node *cur = root;
+
+			while (cur->next != nullptr)
+			{
+				cur = cur->next;
+			}
+			cur->next = new Node(data, nullptr);
+		}
+		++size;
+	}
+	
+	T peak_front()
+	{
+		if (root == nullptr) throw exception("List is empty");
+		return  root;
+	}
+
+	void pop_front()
+	{
+		if (root == nullptr) throw exception("List is empty");
+		Node *temp = root->next;
+		delete root;
+		root = temp;
+		size--;
+	}
+
+	void clear()
+	{
+		while(root != nullptr)
+		{
+			pop_front();
+		}
+	}
+
+	void pop_back()
+	{
+		if (root == nullptr) throw exception("List is empty");
+		if (root->next == nullptr)
+		{
+			delete root;
+			root = nullptr;
+			size--;
+			return;
+		}
+		Node *cur = root;
+		while (cur->next->next != nullptr)
+		{
+			cur = cur->next;
+		}
+		delete cur->next;
+		cur->next = nullptr;
+		size--;
+	}
+
+	void insert(T data, size_t index)
+	{
+		if (index > size) throw exception("Out of bounds");
+		//if (root == nullptr) throw exception("List is empty");
+		if (index == 0)
+		{
+			push_front(data);
+			return;
+		}
+
+		Node *cur = root;
+		size_t i = 0;
+		while (i + 1 < index)
+		{
+			cur = cur->next;
+			++i;
+		}
+		cur->next = new Node(data, cur->next);
+		++size;
+	}
+
+	void remove(size_t index)
+	{
+		if (index+1 > size) throw exception("Out of bounds");
+		if (index == 0)
+		{
+			pop_front();
+			return;
+		}
+		
+		Node *temp = root;
+		while(--index != 0)
+		{
+			temp = temp->next;
+		}
+		Node *temp2 = temp->next;
+		temp->next = temp->next->next;
+		delete temp2;
+	}
+
+	void printList()
+	{
+		Node *temp = root;
+		while (temp != nullptr)
+		{
+			cout << temp->data << " ";
+			temp = temp->next;
+		}
+		cout << '\n';
+	}
+
+	size_t getSize() { return size; }
+};
+
+
+
+int main()
+{
+	List<int> ls;
+	
+	ls.push_front(25);
+	ls.push_front(33);
+	ls.push_front(11);
+	ls.insert(100, 3);
+	ls.printList();
+
+	
+	ls.push_back(12);
+	ls.printList();
+
+	ls.remove(4);
+	
+	ls.printList();
+
+	
+
+	
+	system("pause");
+	return 0;
+}
